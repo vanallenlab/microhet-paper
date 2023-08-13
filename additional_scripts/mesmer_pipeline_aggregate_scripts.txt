@@ -1,0 +1,464 @@
+
+############## 1 
+########## WRITE SEPARATED TIF BY CHANNEL
+
+qptiff_channels = ['dapi', 'foxp3', 'tumor_specific', 'cd8', 'pd1', 'pdl1','autofluorescence']
+
+# write channel-wise flattened TIFs of cropped full resolution mIF data
+out_dir = '/mnt/disks/image_data/immunoprofile/ccrcc_subset_processing/split_tifs'
+initial_series_idx = 0 # full res needed now
+
+for case_id in candidates.index.values:
+    print('\n', case_id)
+    mif_path = glob(f'/mnt/disks/image_data/immunoprofile/raw_files/{case_id}_Scan*.qptiff')[0]
+    full_res_mif = TiffFile(mif_path).series[0].levels[initial_series_idx].asarray()
+    
+    # save specific membrane image 
+    img = pyvips.Image.new_from_array(full_res_mif[[2,3]].transpose((1,2,0)))
+    f = os.path.join(out_dir, f'{case_id}_membrane.tif')
+    print(f)
+    img.write_to_file(f)
+
+    # save channel specific images
+    for idx, channel in enumerate(qptiff_channels):
+        try:
+            img = pyvips.Image.new_from_array(full_res_mif[idx])
+            f = os.path.join(out_dir, f'{case_id}_{idx}_{channel}.tif')
+            print(f)
+            img.write_to_file(f)
+        except:
+            print(f'Ran into error for {case_id}, {channel}')
+
+############## 2
+####### MODIFY MESMER APPLICATION RUNNER TO BREAK WSI INTO CHUNKS
+# clone https://github.com/vanvalenlab/deepcell-applications
+# then need to add this to deepcell-applications/app_runners.py; then replace `run_appplication` fn call in `run_app.py` with `run_application_chunked`
+
+
+def run_application_chunked(arg_dict):
+    """
+    Modification to facilitate large WSI based on https://github.com/vanvalenlab/deepcell-tf/issues/582#issuecomment-1035654181
+
+    Takes the user-supplied command line arguments and runs the specified application
+
+    Args:
+        arg_dict: dictionary of command line args
+
+    Raises:
+        IOError: If specified output file already exists"""
+    _ = timeit.default_timer()
+
+    outfile = os.path.join(arg_dict['output_directory'], arg_dict['output_name'])
+
+    # Check that the output path does not exist already
+    if os.path.exists(outfile):
+        raise IOError(f'{outfile} already exists!')
+
+    app = dca.utils.get_app(arg_dict['app'])
+
+    # load the input image
+    image = dca.prepare.prepare_input(arg_dict['app'], **arg_dict)
+    print('Loaded Image: ', image.shape)
+
+    # make sure the input image is compatible with the app
+    dca.utils.validate_input(app, image)
+
+    # Applications expect a batch dimension
+    image = np.expand_dims(image, axis=0)
+
+    # run the prediction
+    kwargs = dca.utils.get_predict_kwargs(arg_dict)
+
+    labeled_image = np.zeros_like(image)
+    step_size = 2500
+
+
+    print(f'labeled_image: {labeled_image.shape}')
+    # ensure that image is (1, h, w, 2)
+    assert len(labeled_image) == 1
+
+    for row in range(0, labeled_image.shape[1], step_size):
+        for col in range(0, labeled_image.shape[2], step_size):
+            print(f'running chunk: ({row},{col})')
+            labeled_image[:,row:(row + step_size), col:(col + step_size)] = app.predict(image[:,row:(row + step_size), col:(col + step_size)], **kwargs)
+            #labeled_image[row:(row + step_size), col:(col + step_size)] = int(row/step_size)
+
+    output = labeled_image
+
+    # Optionally squeeze the output
+    if arg_dict['squeeze']:
+        output = np.squeeze(output)
+   
+    # save the output as a tiff
+    tifffile.imsave(outfile, output)
+
+    app.logger.info('Wrote output file %s in %s s.', outfile, timeit.default_timer() - _)
+
+
+
+############## 3
+########## RUN MESMER DOCKER PER CASE
+#! /bin/bash
+
+docker build -t vanvalenlab/deepcell-applications .
+
+while read CASEID
+do
+    DATA_DIR=/mnt/disks/image_data/immunoprofile/ccrcc_subset_processing/split_tifs
+    MOUNT_DIR=/data
+    APPLICATION=mesmer
+    NUCLEAR_FILE="${CASEID}_0_dapi.tif"
+    MEMBRANE_FILE="${CASEID}_membrane.tif"
+    
+    echo $CASEID
+    echo $DATA_DIR
+    echo $MOUNT_DIR/$NUCLEAR_FILE
+    echo $MOUNT_DIR/$MEMBRANE_FILE
+    
+    echo "mask_${CASEID}.tif"
+    
+    # remove -it flag
+    docker run --gpus 1 \
+      -v $DATA_DIR:$MOUNT_DIR \
+      vanvalenlab/deepcell-applications:latest \
+      $APPLICATION \
+      --nuclear-image $MOUNT_DIR/$NUCLEAR_FILE \
+      --nuclear-channel 0 \
+      --membrane-channel 0 1\
+      --membrane-image $MOUNT_DIR/$MEMBRANE_FILE \
+      --output-directory $MOUNT_DIR \
+      --output-name "rerun_mesmer_mask_${CASEID}.tif" \
+      --compartment whole-cell 
+    
+done < /home/jupyter/mesmer_case_ids_to_run_14_ccrcc.txt
+
+
+########## 4 
+####### MODIFY ARK TOOLKIT POST-PROCESSING TO USE DASK/MULTIPROCESSING
+# CLONE ARK-TOOLKIT TO `/home/jupyter/ark-dev/` AND ADD TO `marker_quantification.py`
+
+def create_marker_count_matrix_mp(fov, fov_segmentation_labels, fov_image_data, nuclear_counts=False,
+                                 split_large_nuclei=False, extraction='total_intensity', **kwargs):
+    """
+    
+    Create a matrix of cells by channels with the total counts of each marker in each cell.
+
+    Args:
+        segmentation_labels (xarray.DataArray):
+            xarray of shape [fovs, rows, cols, compartment] containing segmentation masks for each
+            fov, potentially across multiple cell compartments
+        image_data (xarray.DataArray):
+            xarray containing all of the channel data across all FOVs
+        nuclear_counts (bool):
+            boolean flag to determine whether nuclear counts are returned, note that if
+            set to True, the compartments coordinate in segmentation_labels must contain 'nuclear'
+        split_large_nuclei (bool):
+            boolean flag to determine whether nuclei which are larger than their assigned cell
+            will get split into two different nuclear objects
+        extraction (str):
+            extraction function used to compute marker counts.
+        **kwargs:
+            arbitrary keyword args for compute_marker_counts
+
+    Returns:
+        tuple (pandas.DataFrame, pandas.DataFrame):
+        - marker counts per cell normalized by cell size
+        - arcsinh transformation of the above
+    """
+    # initialize data frames
+    normalized_data = pd.DataFrame()
+    arcsinh_data = pd.DataFrame()
+
+    # print("extracting data from {}".format(fov))
+
+    # current mask
+    # segmentation_label = segmentation_labels.loc[fov, :, :, :]
+    # segmentation_label = fov_segmentation_labels
+
+    # print('`compute_marker_counts`')
+    # extract the counts per cell for each marker
+    marker_counts = compute_marker_counts(fov_image_data, fov_segmentation_labels,
+                                          nuclear_counts=nuclear_counts,
+                                          split_large_nuclei=split_large_nuclei,
+                                          extraction=extraction, **kwargs)
+
+    # normalize counts by cell size
+    marker_counts_norm = segmentation_utils.transform_expression_matrix(marker_counts,
+                                                                        transform='size_norm')
+
+    # arcsinh transform the data
+    marker_counts_arcsinh = segmentation_utils.transform_expression_matrix(marker_counts_norm,
+                                                                           transform='arcsinh')
+
+    # add data from each fov to array
+    normalized = pd.DataFrame(data=marker_counts_norm.loc['whole_cell', :, :].values,
+                              columns=marker_counts_norm.features)
+
+    arcsinh = pd.DataFrame(data=marker_counts_arcsinh.values[0, :, :],
+                           columns=marker_counts_arcsinh.features)
+
+    if nuclear_counts:
+        # append nuclear counts pandas array with modified column name
+        nuc_column_names = [feature + '_nuclear' for feature in marker_counts.features.values]
+
+        # add nuclear counts to size normalized data
+        normalized_nuc = pd.DataFrame(data=marker_counts_norm.loc['nuclear', :, :].values,
+                                      columns=nuc_column_names)
+        normalized = pd.concat((normalized, normalized_nuc), axis=1)
+
+        # add nuclear counts to arcsinh transformed data
+        arcsinh_nuc = pd.DataFrame(data=marker_counts_arcsinh.loc['nuclear', :, :].values,
+                                   columns=nuc_column_names)
+        arcsinh = pd.concat((arcsinh, arcsinh_nuc), axis=1)
+
+    # add column for current fov
+    normalized['fov'] = fov
+    normalized_data = normalized_data.append(normalized)
+
+    arcsinh['fov'] = fov
+    arcsinh_data = arcsinh_data.append(arcsinh)
+
+    return normalized_data, arcsinh_data
+
+
+########## 5 
+####### RUN DASK MULTIPROCESSING
+
+import sys
+sys.path.append('/home/jupyter/ark_dev')
+
+from marker_quantification import compute_marker_counts,create_marker_count_matrices
+from marker_quantification import create_marker_count_matrix_mp
+
+import dask
+from dask.distributed import Client
+import timeit
+
+import ark
+from ark.utils.load_utils import load_imgs_from_dir
+import deepcell
+from deepcell.applications import Mesmer
+
+import xarray
+import skimage.io as io
+from skimage.io import imread
+import os
+import pandas as pd
+import tifffile
+from tifffile import TiffFile
+import matplotlib.pyplot as plt
+import numpy as np
+import warnings
+from tqdm import tqdm
+
+warnings.filterwarnings('ignore')
+
+qptiff_channels = ['dapi', 'foxp3', 'tumor_specific', 'cd8', 'pd1', 'pdl1','autofluorescence']
+
+N_WORKERS = 8
+N_CHUNKS = 200 # doubling to try to avoid issues with rerun #2
+
+def extract_patches_mod(imarr, patchsize, channels=3, stride=None):
+    """
+    Extract patches from an image. Allows user to specify stride between patches.
+    If no stride is specified, defaults to stride = patchsize for non-overlapping patches. Based on
+    `original implementation <https://github.com/scikit-learn/scikit-learn/blob/95d4f0841d57e8b5f6b2a570312e9d832e69debc/sklearn/feature_extraction/image.py#L244>`_
+    in sklearn.
+
+
+    :param imarr: Image array, RGB format
+    :type imarr: numpy.ndarray
+    :param patchsize: Dimension of extracted patches
+    :type patchsize: int
+    :param stride: Stride length between patches, defaults to None
+    :type stride: int, optional
+    :return: Array of extracted patches, stacked along new axis, shape (npatches, patchsize, patchsize, channels)
+    :rtype: numpy.ndarray
+    """
+    if stride is None:
+        stride = patchsize
+
+    patch_strides = imarr.strides
+    patch_shape = (patchsize, patchsize, channels)
+    extraction_step = (stride, stride, 1)
+    slices = tuple(slice(None, None, st) for st in extraction_step)
+    indexing_strides = imarr[slices].strides
+    patch_indices_shape = ((np.array(imarr.shape) - np.array(patch_shape)) //
+                           np.array(extraction_step)) + 1
+    shape = tuple(list(patch_indices_shape) + list(patch_shape))
+    strides = tuple(list(indexing_strides) + list(patch_strides))
+    print(patch_indices_shape)
+    print(imarr.shape, shape)
+    patches = np.lib.stride_tricks.as_strided(imarr, shape=shape, strides=strides)
+
+    return patches.squeeze(2)  # retain tiling shape
+
+
+def run_postprocessing(case_id, out_dir, tile_size, avg_pan_content_cutoff, avg_dapi_content_cutoff):
+    """
+    """
+    qptiff_channels = ['dapi', 'foxp3', 'tumor_specific', 'cd8', 'pd1', 'pdl1','autofluorescence']
+
+    ################################################################################################
+    # load output mask from Mesmer step
+    mask_path = os.path.join(out_dir, f'mesmer_mask_{case_id}.tif')
+    if os.path.exists(mask_path):
+        mask_sk = io.imread(mask_path, plugin='tifffile')
+
+    else:
+        mask_path = os.path.join(out_dir, f'rerun_mesmer_mask_{case_id}.tif')
+        mask_sk = io.imread(mask_path, plugin='tifffile')
+
+    # load channel-split tif data
+    data = []
+    for idx, channel in enumerate(qptiff_channels):
+        img_path = os.path.join(out_dir, f'{case_id}_{idx}_{channel}.tif')
+        data.append(io.imread(img_path, plugin='tifffile'))
+    data = np.stack(data,-1)
+    data = np.expand_dims(data, 0)
+
+    ################################################################################################
+    # get tiles for segmentation mask and input data 
+    print('Making tiles')
+    seg_tiles = extract_patches_mod(mask_sk[0,...,:1], tile_size,1)
+    data_tiles = extract_patches_mod(data[0], tile_size, len(qptiff_channels))
+
+    print('Filtering out low signal area')
+    # filter out tiles that don't have much content in them to avoid wasting time
+    pan_content = [x.mean() for x in data_tiles.reshape(-1, tile_size, tile_size, len(qptiff_channels))]
+    dapi_content = [(x[...,0] < avg_dapi_content_cutoff).mean() for x in data_tiles.reshape(-1, tile_size, tile_size, len(qptiff_channels))]
+    counts = [x.sum()>0 for x in seg_tiles.reshape(-1, tile_size, tile_size)]
+
+    crit_a = np.array(counts).reshape(data_tiles.shape[:2])
+    crit_b = np.array(pan_content).reshape(data_tiles.shape[:2]) > avg_pan_content_cutoff
+    x,y = np.where(crit_a & crit_b) # going against normal convention to be consistent with xarray syntax
+    passing_tile_coords = [c for c in zip(y,x)]
+
+    # subset down to passing tiles
+    filtered_seg_tiles = seg_tiles[x,y].astype(np.uint64)
+    filtered_data_tiles = data_tiles[x,y]
+    data_channels = qptiff_channels
+
+    print(filtered_seg_tiles.dtype)
+    print(filtered_data_tiles.dtype)
+    ################################################################################################
+    # reformat array data into xarray for Ark toolkit
+    print('Packaging data into xarray format')
+    seg_reformat = xarray.DataArray(
+        filtered_seg_tiles,
+        dims=['fovs','x', 'y', 'compartments'], 
+        coords=[[f'{a}_{b}' for (a,b) in passing_tile_coords], np.arange(filtered_seg_tiles.shape[1]), np.arange(filtered_seg_tiles.shape[2]),['whole_cell']]
+    )
+
+    input_reformat = xarray.DataArray(
+        filtered_data_tiles,
+        dims=['fovs','x', 'y', 'channels'],
+        coords=[[f'{a}_{b}' for (a,b) in passing_tile_coords], np.arange(filtered_data_tiles.shape[1]), np.arange(filtered_data_tiles.shape[2]), data_channels]
+    )
+
+    ################################################################################################
+    # run cell expression calling batch-wise then save dataframes to file
+
+    quant_agg = pd.DataFrame()
+    arcsinh_quant_agg = pd.DataFrame()
+    print('Starting quantification loop')
+    
+    print(f'Using {N_WORKERS} Workers ')
+    
+    for chunk_idx, coord_chunk in enumerate(np.array_split(np.array(passing_tile_coords), N_CHUNKS)):
+        print(f'Working on chunk {chunk_idx}...')
+        client = Client(n_workers=N_WORKERS)
+
+        store = []
+        print('Scattering to Dask Client')
+        for fov_idx in [f'{a}_{b}' for (a,b) in coord_chunk]:
+            inputs = {
+                'fov':fov_idx,
+                'fov_segmentation_labels':seg_reformat.loc[fov_idx,:,:,:],
+                'fov_image_data':input_reformat.loc[fov_idx,:,:,:],
+                'regionprops_multi_comp':[],
+            }
+
+            f = client.submit(create_marker_count_matrix_mp, **inputs)
+            store.append(f)
+
+        completed = []    
+        for future, output in dask.distributed.as_completed(store, with_results = True, raise_errors=True):
+            completed.append(output)
+
+        client.close()
+        
+        del client # not sure if this will stop bleedover of memory?
+        
+        # aggregate, update, and save intermediate outputs
+        partial_quant_agg = pd.concat([x[0] for x in completed])
+        partial_arcsinh_quant_agg = pd.concat([x[1] for x in completed])
+
+        quant_agg = quant_agg.append(partial_quant_agg)
+        arcsinh_quant_agg = quant_agg.append(partial_arcsinh_quant_agg)
+        
+        print(f'Saving intermediates to file ({chunk_idx})')
+        quant_agg.to_pickle(os.path.join(out_dir, f'{case_id}_partial_quant_agg_rerun.pkl'))
+        arcsinh_quant_agg.to_pickle(os.path.join(out_dir, f'{case_id}_partial_arcsinh_quant_agg_rerun.pkl')) 
+        
+        
+        
+    print('Done... Saving final aggregate results to pickle')
+    # quant_agg = pd.concat([x[0] for x in completed])
+    # arcsinh_quant_agg = pd.concat([x[1] for x in completed])
+    quant_agg.to_pickle(os.path.join(out_dir, f'{case_id}_quant_agg_rerun.pkl'))
+    arcsinh_quant_agg.to_pickle(os.path.join(out_dir, f'{case_id}_arcsinh_quant_agg_rerun.pkl'))  
+
+
+#     for start in tqdm(np.arange(0,len(passing_tile_coords), batch_size)):
+#         index_subset = [f'{a}_{b}' for (a,b) in passing_tile_coords][start:start+batch_size]
+#         quant, arcsinh_quant = create_marker_count_matrices(
+#             seg_reformat.loc[index_subset,:,:,:], 
+#             input_reformat.loc[index_subset,:,:,:],
+#             regionprops_multi_comp=[],  # dies at final stage of function call otherwise.... might be a legacy pandas issue from them using old version
+#         )
+
+#         quant_agg = quant_agg.append(quant)
+#         arcsinh_quant_agg = arcsinh_quant_agg.append(arcsinh_quant)
+
+#         quant_agg.to_pickle(os.path.join(out_dir, f'{case_id}_temp_quant_agg_rerun.pkl'))
+#         arcsinh_quant_agg.to_pickle(os.path.join(out_dir, f'{case_id}_temp_arcsinh_quant_agg_rerun.pkl'))
+
+#     quant_agg.to_pickle(os.path.join(out_dir, f'{case_id}_quant_agg_rerun.pkl'))
+#     arcsinh_quant_agg.to_pickle(os.path.join(out_dir, f'{case_id}_arcsinh_quant_agg_rerun.pkl'))
+
+
+# ############################################################################################################################################################################################### 
+
+completed = [
+    'IP_19_G00562',
+    'IP_19_D00209',
+    'IP_19_G00660',
+    'IP_19_K00367',
+    'IP_19_E00218',
+    'IP_20_F00356',
+    'IP_19_R00053',
+    'IP_19_T00810',
+    'IP_20_M00245'
+]
+
+if __name__ == '__main__':
+
+    out_dir = '/mnt/disks/image_data/immunoprofile/ccrcc_subset_processing/split_tifs'
+    case_ids = pd.read_table('/home/jupyter/mesmer_case_ids_to_run_14_ccrcc.txt',header=None).values.reshape(-1)
+    tile_size = 1000
+    avg_pan_content_cutoff = 2
+    avg_dapi_content_cutoff = 10  
+
+    np.random.shuffle(case_ids)
+
+    for case_id in case_ids:
+        if case_id not in completed:
+            print(f'Running {case_id}....')
+            try:
+                run_postprocessing(case_id, out_dir, tile_size, avg_pan_content_cutoff, avg_dapi_content_cutoff)
+
+            except Exception as e:
+                print(f'Issue with {case_id}: \n\n\n {e}')
+        else:
+            print(f'Already ran {case_id}')

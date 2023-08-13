@@ -1,0 +1,38 @@
+,0
+"[supp] [pearsonrho, pval] omitting_homog_reg_case_mh_freq_vs_fhs_max_3plus","{'val': (0.7373383101356706, 0.0007313338566483678)}"
+"[supp] [pearsonrho, pval] omitting_homog_hue_mark_case_mh_freq_vs_fhs_max_3plus","{'val': (0.7373383101356706, 0.0007313338566483678)}"
+"[supp] [pearsonrho, pval] omitting_homog_reg_case_mh_freq_vs_fhs_mean_3plus","{'val': (0.30200131658565577, 0.2387571412385807)}"
+"[supp] [pearsonrho, pval] omitting_homog_hue_mark_case_mh_freq_vs_fhs_mean_3plus","{'val': (0.30200131658565577, 0.2387571412385807)}"
+"[supp] [pearsonrho, pval] omitting_homog_reg_case_mh_freq_vs_ths_max_3plus","{'val': (0.33503309718372176, 0.18866514885512004)}"
+"[supp] [pearsonrho, pval] omitting_homog_hue_mark_case_mh_freq_vs_ths_max_3plus","{'val': (0.33503309718372176, 0.18866514885512004)}"
+"[supp] [pearsonrho, pval] omitting_homog_reg_case_mh_freq_vs_ths_mean_3plus","{'val': (-0.08600483900225388, 0.7427563115696139)}"
+"[supp] [pearsonrho, pval] omitting_homog_hue_mark_case_mh_freq_vs_ths_mean_3plus","{'val': (-0.08600483900225388, 0.7427563115696139)}"
+"[supp] [pearsonrho, pval] omitting_homog_reg_block_count_vs_fhs_max_3plus","{'val': (0.0811412659109548, 0.7568789996144967)}"
+"[supp] [pearsonrho, pval] omitting_homog_reg_block_count_vs_fhs_mean_3plus","{'val': (-0.045385892664708216, 0.8626787835727205)}"
+"[supp] [pearsonrho, pval] omitting_homog_reg_block_count_vs_ths_max_3plus","{'val': (0.18386116360390023, 0.4799429317114536)}"
+"[supp] [pearsonrho, pval] omitting_homog_reg_block_count_vs_ths_mean_3plus","{'val': (0.004452918944241444, 0.9864674726009686)}"
+"[supp] [pearsonrho, pval] including_homog_reg_block_count_vs_fhs_max_3plus","{'val': (0.19240721496574148, 0.4033916243341775)}"
+"[supp] [pearsonrho, pval] including_homog_reg_block_count_vs_fhs_mean_3plus","{'val': (-0.02097929887031228, 0.9280791722056657)}"
+"[supp] [pearsonrho, pval] including_homog_reg_block_count_vs_ths_max_3plus","{'val': (0.28443676518734384, 0.2114285212852327)}"
+"[supp] [pearsonrho, pval] including_homog_reg_block_count_vs_ths_mean_3plus","{'val': (0.03154238947517046, 0.8920366274096562)}"
+"[supp] [pearsonrho, pval] including_homog_reg_case_mh_freq_vs_gs_range_3plus","{'val': (0.12583102297830853, 0.5867928740379823)}"
+"[supp] [pearsonrho, pval] including_homog_reg_block_count_vs_gs_range_3plus","{'val': (0.47968789799976097, 0.027770349135204195)}"
+"[supp] [pearsonrho, pval] including_homog_reg_block_count_vs_gs_max_3plus","{'val': (0.32034872450180607, 0.1568443871597145)}"
+"[supp] [pearsonrho, pval] including_homog_reg_block_count_vs_gs_std_3plus","{'val': (0.30045669223473265, 0.18570913241837342)}"
+"[supp] [pearsonrho, pval] including_homog_reg_case_mh_freq_vs_gs_std_3plus","{'val': (0.1067406940844614, 0.6451467439583638)}"
+"[supp] [pearsonrho, pval] including_homog_reg_block_count_vs_gs_mean_3plus","{'val': (0.14412729168966582, 0.5330878609681082)}"
+"[supp] [pearsonrho, pval] including_homog_reg_case_mh_freq_vs_fhs_max_3plus","{'val': (0.8289921927586031, 3.419586157387227e-06)}"
+"[supp] [pearsonrho, pval] including_homog_hue_mark_case_mh_freq_vs_fhs_max_3plus","{'val': (0.8289921927586031, 3.419586157387227e-06)}"
+"[supp] [pearsonrho, pval] including_homog_reg_case_mh_freq_vs_fhs_mean_3plus","{'val': (0.9040762334498671, 1.911749611005403e-08)}"
+"[supp] [pearsonrho, pval] including_homog_hue_mark_case_mh_freq_vs_fhs_mean_3plus","{'val': (0.9040762334498671, 1.911749611005403e-08)}"
+"[supp] [pearsonrho, pval] including_homog_reg_case_mh_freq_vs_ths_max_3plus","{'val': (0.6281144672182222, 0.0022963783325292814)}"
+"[supp] [pearsonrho, pval] including_homog_hue_mark_case_mh_freq_vs_ths_max_3plus","{'val': (0.6281144672182222, 0.0022963783325292814)}"
+"[supp] [pearsonrho, pval] including_homog_reg_case_mh_freq_vs_ths_mean_3plus","{'val': (0.9344113532282672, 5.826930131668322e-10)}"
+"[supp] [pearsonrho, pval] including_homog_hue_mark_case_mh_freq_vs_ths_mean_3plus","{'val': (0.9344113532282672, 5.826930131668322e-10)}"
+[supp] [non tiebreaker bayesfactor] log10(bayes factor),"{'val': <bound method Series.to_dict of selection_type
+grade_score                         4.717936
+slide_seg_max                       3.043960
+slide_seg_maxes_10_area_frac_min    5.816549
+slide_seg_maxes_25_area_frac_min    5.123401
+Name: loglik_diff, dtype: float64>}"
+[supp]  tiebreaker 0.01 llrt] neg_log10_llrt_pval,"{'grade_score': 1.4073578623814498, 'slide_seg_max': 3.9871002875406516, 'slide_seg_maxes_10_area_frac_min': 4.894868262723732, 'slide_seg_maxes_25_area_frac_min': 4.047273656963571}"

@@ -1,0 +1,156 @@
+identifier,result
+[fig1d] [mwu]: gradescore vs assigned CM025_G2 vs. CM025_G3,8.951486630415366e-09
+[fig1d] [mwu]: gradescore vs assigned CM025_G2 vs. CM025_G4,2.893892690397245e-20
+[fig1d] [mwu]: gradescore vs assigned CM025_G3 vs. CM025_G4,5.002723464644515e-10
+[fig1d] [mwu]: gradescore vs assigned KIRC_G2 vs. KIRC_G3,1.6714844421745554e-10
+[fig1d] [mwu]: gradescore vs assigned KIRC_G2 vs. KIRC_G4,1.1234876573988704e-19
+[fig1d] [mwu]: gradescore vs assigned KIRC_G3 vs. KIRC_G4,3.654506287587643e-10
+[fig1d] [mwu]: gradescore vs assigned PROFILE_G2 vs. PROFILE_G3,9.524522447745188e-11
+[fig1d] [mwu]: gradescore vs assigned PROFILE_G2 vs. PROFILE_G4,1.870545276467831e-21
+[fig1d] [mwu]: gradescore vs assigned PROFILE_G3 vs. PROFILE_G4,4.097872817752416e-11
+[fig1f] [multivariate logrank] qbin3 os: ,1.09290945014112e-06
+[fig1f] [multivariate logrank] qbin3 pfs: ,3.897908058694395e-15
+[fig1f] [pairwise logrank] qbin3 OS:  + Higher Grade vs. OS:  + Intermed. Grade,0.0083883232433765
+[fig1f] [pairwise logrank] qbin3 OS:  + Higher Grade vs. OS:  + Lower Grade,1.933637354645779e-07
+[fig1f] [pairwise logrank] qbin3 OS:  + Intermed. Grade vs. OS:  + Lower Grade,0.0058493410633129
+[fig1f] [pairwise logrank] qbin3 PFS:  + Higher Grade vs. PFS:  + Intermed. Grade,1.111062743683745e-05
+[fig1f] [pairwise logrank] qbin3 PFS:  + Higher Grade vs. PFS:  + Lower Grade,4.373827328844424e-15
+[fig1f] [pairwise logrank] qbin3 PFS:  + Intermed. Grade vs. PFS:  + Lower Grade,0.0001137555361996
+[fig1g] [chi2 llr]: OS categorical vs continuous,1.0
+[fig1g] [chi2 llr]: PFS categorical vs continuous,0.0002532212230675279
+[fig1g] [mwu]: bootstrapped c-index OS_Categorical vs. OS_Continuous,0.016283602557371393
+[fig1g] [mwu]: bootstrapped c-index PFS_Categorical vs. PFS_Continuous,2.0245751761875954e-11
+[fig3a] [fisher] BAP1 + any_diff_edge: CM025_WT vs CM025_MUT,0.04830808190858757
+[fig3a] [fisher] BAP1 + any_diff_edge: KIRC_WT vs KIRC_MUT,1.0
+[fig3a] [fisher] BAP1 + any_distal_edge: CM025_WT vs CM025_MUT,0.024261456679049588
+[fig3a] [fisher] BAP1 + any_distal_edge: KIRC_WT vs KIRC_MUT,0.09906222065420525
+[fig3a] [fisher] BAP1 + any_proximal_edge: CM025_WT vs CM025_MUT,0.19159191268382014
+[fig3a] [fisher] BAP1 + any_proximal_edge: KIRC_WT vs KIRC_MUT,1.0
+[fig3a] [fisher] PBRM1 + any_diff_edge: CM025_WT vs CM025_MUT,0.028655002612263485
+[fig3a] [fisher] PBRM1 + any_diff_edge: KIRC_WT vs KIRC_MUT,0.0887956525261912
+[fig3a] [fisher] PBRM1 + any_distal_edge: CM025_WT vs CM025_MUT,0.46581043904545233
+[fig3a] [fisher] PBRM1 + any_distal_edge: KIRC_WT vs KIRC_MUT,1.0
+[fig3a] [fisher] PBRM1 + any_proximal_edge: CM025_WT vs CM025_MUT,0.009776456442411877
+[fig3a] [fisher] PBRM1 + any_proximal_edge: KIRC_WT vs KIRC_MUT,0.06632980168968335
+[fig3a] [fisher] SETD2 + any_diff_edge: CM025_WT vs CM025_MUT,0.20391497933655964
+[fig3a] [fisher] SETD2 + any_diff_edge: KIRC_WT vs KIRC_MUT,0.10942645102531165
+[fig3a] [fisher] SETD2 + any_distal_edge: CM025_WT vs CM025_MUT,0.5473151257279355
+[fig3a] [fisher] SETD2 + any_distal_edge: KIRC_WT vs KIRC_MUT,0.77370603935823
+[fig3a] [fisher] SETD2 + any_proximal_edge: CM025_WT vs CM025_MUT,0.24839555127628393
+[fig3a] [fisher] SETD2 + any_proximal_edge: KIRC_WT vs KIRC_MUT,0.06603184660866984
+[fig3a] [mwu] BAP1 + all_rag_edge_total: CM025_WT vs. CM025_MUT,0.02440940569110222
+[fig3a] [mwu] BAP1 + all_rag_edge_total: KIRC_WT vs. KIRC_MUT,0.7195140704330647
+[fig3a] [mwu] BAP1 + all_rag_edge_total: PROFILE_WT vs. PROFILE_MUT,0.79298666493967
+[fig3a] [mwu] BAP1 + edge_class_distal: CM025_WT vs. CM025_MUT,0.02534516305971189
+[fig3a] [mwu] BAP1 + edge_class_distal: KIRC_WT vs. KIRC_MUT,0.04024007153577587
+[fig3a] [mwu] BAP1 + edge_class_distal: PROFILE_WT vs. PROFILE_MUT,1.0
+[fig3a] [mwu] BAP1 + edge_class_proximal: CM025_WT vs. CM025_MUT,0.08445115822777999
+[fig3a] [mwu] BAP1 + edge_class_proximal: KIRC_WT vs. KIRC_MUT,0.7033705692684372
+[fig3a] [mwu] BAP1 + edge_class_proximal: PROFILE_WT vs. PROFILE_MUT,0.6444170139347457
+[fig3a] [mwu] PBRM1 + all_rag_edge_total: CM025_WT vs. CM025_MUT,0.007275576596874546
+[fig3a] [mwu] PBRM1 + all_rag_edge_total: KIRC_WT vs. KIRC_MUT,0.11536769527515411
+[fig3a] [mwu] PBRM1 + all_rag_edge_total: PROFILE_WT vs. PROFILE_MUT,0.9393643274515765
+[fig3a] [mwu] PBRM1 + edge_class_distal: CM025_WT vs. CM025_MUT,0.43519200788379564
+[fig3a] [mwu] PBRM1 + edge_class_distal: KIRC_WT vs. KIRC_MUT,0.8030931579412002
+[fig3a] [mwu] PBRM1 + edge_class_distal: PROFILE_WT vs. PROFILE_MUT,0.376379967505152
+[fig3a] [mwu] PBRM1 + edge_class_proximal: CM025_WT vs. CM025_MUT,0.002147454119686685
+[fig3a] [mwu] PBRM1 + edge_class_proximal: KIRC_WT vs. KIRC_MUT,0.0644222087211421
+[fig3a] [mwu] PBRM1 + edge_class_proximal: PROFILE_WT vs. PROFILE_MUT,0.8086155791434813
+[fig3a] [mwu] SETD2 + all_rag_edge_total: CM025_WT vs. CM025_MUT,0.1269198065295193
+[fig3a] [mwu] SETD2 + all_rag_edge_total: KIRC_WT vs. KIRC_MUT,0.2218366145766809
+[fig3a] [mwu] SETD2 + all_rag_edge_total: PROFILE_WT vs. PROFILE_MUT,0.5640566748064684
+[fig3a] [mwu] SETD2 + edge_class_distal: CM025_WT vs. CM025_MUT,0.4330119235179013
+[fig3a] [mwu] SETD2 + edge_class_distal: KIRC_WT vs. KIRC_MUT,0.8429128357646168
+[fig3a] [mwu] SETD2 + edge_class_distal: PROFILE_WT vs. PROFILE_MUT,0.3642933058322325
+[fig3a] [mwu] SETD2 + edge_class_proximal: CM025_WT vs. CM025_MUT,0.12675126212449123
+[fig3a] [mwu] SETD2 + edge_class_proximal: KIRC_WT vs. KIRC_MUT,0.15827872515036356
+[fig3a] [mwu] SETD2 + edge_class_proximal: PROFILE_WT vs. PROFILE_MUT,0.696819071900457
+[fig3b] [fisher] 9p21.3 + any_diff_edge: CM-025_LOSS vs CM-025_WT,0.0012241307363680192
+[fig3b] [fisher] 9p21.3 + any_diff_edge: TCGA-KIRC_LOSS vs TCGA-KIRC_WT,0.07769380656631082
+[fig3b] [fisher] 9p21.3 + any_distal_edge: CM-025_LOSS vs CM-025_WT,0.12847329988202202
+[fig3b] [fisher] 9p21.3 + any_distal_edge: TCGA-KIRC_LOSS vs TCGA-KIRC_WT,0.3087016342830294
+[fig3b] [fisher] 9p21.3 + any_proximal_edge: CM-025_LOSS vs CM-025_WT,0.00028406350091532884
+[fig3b] [fisher] 9p21.3 + any_proximal_edge: TCGA-KIRC_LOSS vs TCGA-KIRC_WT,0.06610566766459398
+[fig3c] [pairwise logrank] OS: Heterogeneous + G2/3 vs. OS: Homogeneous + G2/3,0.1219406412369021
+[fig3c] [pairwise logrank] OS: Heterogeneous + G4 vs. OS: Homogeneous + G4,0.5812975280279502
+[fig3c] [pairwise logrank] PFS: Heterogeneous + G2/3 vs. PFS: Homogeneous + G2/3,0.069944222725654
+[fig3c] [pairwise logrank] PFS: Heterogeneous + G4 vs. PFS: Homogeneous + G4,0.5609468491391847
+[fig3d] [pairwise logrank] OS: Heterogeneous + Lower 2/3 vs. OS: Homogeneous + Lower 2/3,0.2598130982763286
+[fig3d] [pairwise logrank] OS: Heterogeneous + Upper Tercile vs. OS: Homogeneous + Upper Tercile,0.371469187926325
+[fig3d] [pairwise logrank] PFS: Heterogeneous + Lower 2/3 vs. PFS: Homogeneous + Lower 2/3,0.0163579317963105
+[fig3d] [pairwise logrank] PFS: Heterogeneous + Upper Tercile vs. PFS: Homogeneous + Upper Tercile,0.648932541385979
+[fig4a] [pairwise logrank] OS: ICI + Heterogeneous vs. OS: ICI + Homogeneous,0.0178992917903433
+[fig4a] [pairwise logrank] OS: Non-ICI + Heterogeneous vs. OS: Non-ICI + Homogeneous,0.1295193900559943
+[fig4a] [pairwise logrank] PFS: ICI + Heterogeneous vs. PFS: ICI + Homogeneous,0.0306886912136959
+[fig4a] [pairwise logrank] PFS: Non-ICI + Heterogeneous vs. PFS: Non-ICI + Homogeneous,0.907992767648134
+[fig4b] [pairwise logrank] OS: ICI + Heterogeneous + Higher (Relative) vs. OS: ICI + Heterogeneous + Lower (Relative),0.1774248837235756
+[fig4b] [pairwise logrank] OS: ICI + Homogeneous + Higher (Relative) vs. OS: ICI + Homogeneous + Lower (Relative),0.2570362432345397
+[fig4b] [pairwise logrank] OS: Non-ICI + Heterogeneous + Higher (Relative) vs. OS: Non-ICI + Heterogeneous + Lower (Relative),0.9218055379431964
+[fig4b] [pairwise logrank] OS: Non-ICI + Homogeneous + Higher (Relative) vs. OS: Non-ICI + Homogeneous + Lower (Relative),0.1742054066660064
+[fig4b] [pairwise logrank] PFS: ICI + Heterogeneous + Higher (Relative) vs. PFS: ICI + Heterogeneous + Lower (Relative),0.5261189147363232
+[fig4b] [pairwise logrank] PFS: ICI + Homogeneous + Higher (Relative) vs. PFS: ICI + Homogeneous + Lower (Relative),0.4025243970129443
+[fig4b] [pairwise logrank] PFS: Non-ICI + Heterogeneous + Higher (Relative) vs. PFS: Non-ICI + Heterogeneous + Lower (Relative),0.5298758507932553
+[fig4b] [pairwise logrank] PFS: Non-ICI + Homogeneous + Higher (Relative) vs. PFS: Non-ICI + Homogeneous + Lower (Relative),0.8292302142588863
+[fig4x] [fisher] TCGA vs CM025: proportion G4 in usable primary site data,2.462387820165568e-10
+[fig4x] [mean]: global cohort grade score [primary + usable nontil + Stage IV only] cm025,0.7340353299223806
+[fig4x] [mean]: global cohort grade score [primary + usable nontil + Stage IV only] kirc,0.6585618252456421
+[fig4x] [mean]: global cohort grade score [primary + usable nontil + Stage IV only] profile,0.6431920434417308
+[fig4x] [mean]: global cohort grade score [primary + usable nontil + all stages] cm025,0.7340353299223806
+[fig4x] [mean]: global cohort grade score [primary + usable nontil + all stages] kirc,0.4830432396927685
+[fig4x] [mean]: global cohort grade score [primary + usable nontil + all stages] profile,0.49521722281473907
+[fig4x] [mwu]: global cohort grade score [primary + usable nontil + Stage IV only] cm025 vs. profile,0.0022112279550381003
+[fig4x] [mwu]: global cohort grade score [primary + usable nontil + Stage IV only] kirc vs. cm025,0.00668540757605739
+[fig4x] [mwu]: global cohort grade score [primary + usable nontil + Stage IV only] kirc vs. profile,0.7655398423056133
+[fig4x] [pairwise logrank] OS: ICI + quantile_bin_0 vs. OS: ICI + quantile_bin_1,0.0176991006763947
+[fig4x] [pairwise logrank] OS: Non-ICI + quantile_bin_0 vs. OS: Non-ICI + quantile_bin_1,0.0281792846089696
+[fig4x] [pairwise logrank] PFS: ICI + quantile_bin_0 vs. PFS: ICI + quantile_bin_1,0.4189960161462623
+[fig4x] [pairwise logrank] PFS: Non-ICI + quantile_bin_0 vs. PFS: Non-ICI + quantile_bin_1,0.5689154492370941
+[fig5] [pairwise logrank] OS: ICI + HG GradeHet + High Infiltration +  vs. OS: ICI + Rest + ,0.0219851022274621
+[fig5] [pairwise logrank] OS: ICI + Heterogeneous + high_hg_global_infiltration vs. OS: ICI + Heterogeneous + low_hg_global_infiltration,0.1231393977311912
+[fig5] [pairwise logrank] OS: ICI + Homogeneous + high_hg_global_infiltration vs. OS: ICI + Homogeneous + low_hg_global_infiltration,0.9345069856148378
+[fig5] [pairwise logrank] OS: Non-ICI + HG GradeHet + High Infiltration +  vs. OS: Non-ICI + Rest + ,0.8532561762789537
+[fig5] [pairwise logrank] PFS: ICI + HG GradeHet + High Infiltration +  vs. PFS: ICI + Rest + ,0.0661584561883679
+[fig5] [pairwise logrank] PFS: ICI + Heterogeneous + high_hg_global_infiltration vs. PFS: ICI + Heterogeneous + low_hg_global_infiltration,0.2550610026020978
+[fig5] [pairwise logrank] PFS: ICI + Homogeneous + high_hg_global_infiltration vs. PFS: ICI + Homogeneous + low_hg_global_infiltration,0.5720775172383863
+[fig5] [pairwise logrank] PFS: Non-ICI + HG GradeHet + High Infiltration +  vs. PFS: Non-ICI + Rest + ,0.7573371431003963
+[supp (fig4 related)] [cph LLRT] [OS] any_diff_edge Heterogeneous nonstroma_grade_mean univariate,0.07695511405207386
+[supp (fig4 related)] [cph LLRT] [OS] any_diff_edge Homogeneous nonstroma_grade_mean univariate,0.7261014909198755
+[supp (fig4 related)] [cph LLRT] [PFS] any_diff_edge Heterogeneous nonstroma_grade_mean univariate,0.3903295353435734
+[supp (fig4 related)] [cph LLRT] [PFS] any_diff_edge Homogeneous nonstroma_grade_mean univariate,0.98780738867573
+[supp (fig4 related)] [cph wald coef test] [OS] any_diff_edge Heterogeneous nonstroma_grade_mean univariate,0.0802897339958689
+[supp (fig4 related)] [cph wald coef test] [OS] any_diff_edge Homogeneous nonstroma_grade_mean univariate,0.7278588760589925
+[supp (fig4 related)] [cph wald coef test] [PFS] any_diff_edge Heterogeneous nonstroma_grade_mean univariate,0.38820756859211414
+[supp (fig4 related)] [cph wald coef test] [PFS] any_diff_edge Homogeneous nonstroma_grade_mean univariate,0.9879244488840528
+[supp (fig5 related) [cph LLRT] [OS] any_hg_diff_edge Heterogeneous all_nodes_area_weighted univariate,0.04976620946945438
+[supp (fig5 related) [cph LLRT] [OS] any_hg_diff_edge Heterogeneous global_infiltration_bin univariate,0.18986160608017844
+[supp (fig5 related) [cph LLRT] [PFS] any_hg_diff_edge Heterogeneous all_nodes_area_weighted univariate,0.9681482977066287
+[supp (fig5 related) [cph LLRT] [PFS] any_hg_diff_edge Heterogeneous global_infiltration_bin univariate,0.2529430374763494
+[supp (fig5 related)] [cph wald coef test] [OS] any_hg_diff_edge Heterogeneous all_nodes_area_weighted univariate,0.06984071725339178
+[supp (fig5 related)] [cph wald coef test] [OS] any_hg_diff_edge Heterogeneous global_infiltration_bin univariate,0.19054141993788762
+[supp (fig5 related)] [cph wald coef test] [OS] any_hg_diff_edge Homogeneous all_nodes_area_weighted univariate,0.5972849911282225
+[supp (fig5 related)] [cph wald coef test] [OS] any_hg_diff_edge Homogeneous global_infiltration_bin univariate,0.7600513765297592
+[supp (fig5 related)] [cph wald coef test] [PFS] any_hg_diff_edge Heterogeneous all_nodes_area_weighted univariate,0.9685066727077274
+[supp (fig5 related)] [cph wald coef test] [PFS] any_hg_diff_edge Heterogeneous global_infiltration_bin univariate,0.2511268226477361
+[supp (fig5 related)] [cph wald coef test] [PFS] any_hg_diff_edge Homogeneous all_nodes_area_weighted univariate,0.23276902107160005
+[supp (fig5 related)] [cph wald coef test] [PFS] any_hg_diff_edge Homogeneous global_infiltration_bin univariate,0.8166204048600527
+[supp (fig5 related)]] [cph LLRT] [OS] any_hg_diff_edge Homogeneous all_nodes_area_weighted univariate,0.593787642232979
+[supp (fig5 related)]] [cph LLRT] [OS] any_hg_diff_edge Homogeneous global_infiltration_bin univariate,0.7600700952461361
+[supp (fig5 related)]] [cph LLRT] [PFS] any_hg_diff_edge Homogeneous all_nodes_area_weighted univariate,0.22261605600822015
+[supp (fig5 related)]] [cph LLRT] [PFS] any_hg_diff_edge Homogeneous global_infiltration_bin univariate,0.8165975117834445
+[supp] [cph LLRT] [OS] PBRM MUT any_diff_edge univariate,0.9822212603468774
+[supp] [cph LLRT] [OS] PBRM MUT combined_total_weighted_edge_score univariate,0.947368506119338
+[supp] [cph LLRT] [OS] PBRM WT any_diff_edge univariate,0.015366699165193069
+[supp] [cph LLRT] [OS] PBRM WT combined_total_weighted_edge_score univariate,0.03381061136767187
+[supp] [cph LLRT] [PFS] PBRM MUT any_diff_edge univariate,0.3554373161397386
+[supp] [cph LLRT] [PFS] PBRM MUT combined_total_weighted_edge_score univariate,0.7666472788410779
+[supp] [cph LLRT] [PFS] PBRM WT any_diff_edge univariate,0.9603925341181144
+[supp] [cph LLRT] [PFS] PBRM WT combined_total_weighted_edge_score univariate,0.8256420037137757
+[supp] [cph wald coef test] [OS] PBRM MUT any_diff_edge univariate,0.9824026165612125
+[supp] [cph wald coef test] [OS] PBRM MUT combined_total_weighted_edge_score univariate,0.9472482516641191
+[supp] [cph wald coef test] [OS] PBRM WT any_diff_edge univariate,0.021160888336615342
+[supp] [cph wald coef test] [OS] PBRM WT combined_total_weighted_edge_score univariate,0.04855014864718002
+[supp] [cph wald coef test] [PFS] PBRM MUT any_diff_edge univariate,0.36308805250777065
+[supp] [cph wald coef test] [PFS] PBRM MUT combined_total_weighted_edge_score univariate,0.7693129185713005
+[supp] [cph wald coef test] [PFS] PBRM WT any_diff_edge univariate,0.9603573215226677
+[supp] [cph wald coef test] [PFS] PBRM WT combined_total_weighted_edge_score univariate,0.8244046585265766
+total_pancohort_patients,1068.0

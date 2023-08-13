@@ -1,0 +1,211 @@
+################ 20220127_run_registration_ip_subset408.sh ################
+###########################################################################
+#! /bin/bash
+
+SCRIPT=/home/jupyter/slide_alignment/slide_alignment/cli_main.py
+PFMM=/home/jupyter/PathFlow-MixMatch/pathflow_mixmatch/cli_mod.py 
+PATHS=ip_subset_paths.csv
+IDS=ip_subset_ids.csv
+
+python $SCRIPT --paths_file $PATHS --slide_id_file $IDS --gpu_device 0 --script $PFMM --initial_series_idx 4 --higher_res_series_idx 3 --log_out
+###########################################################################
+
+
+
+
+
+###########################################################################
+################ 20220128_run_displacement_cpuonly_ip_subset408_series1_full.sh
+
+SCRIPT=/home/jupyter/slide-alignment/slide_alignment/run_displacement.py
+PFMM=/home/jupyter/PathFlow-MixMatch/pathflow_mixmatch/cli_mod.py 
+PATHS=ip_subset_paths.csv
+IDS=ip_subset_ids.csv
+
+python $SCRIPT --paths_file $PATHS --slide_id_file $IDS --script $PFMM --initial_series_idx 4 --higher_res_series_idx 1 --gpu_device -1 
+
+
+
+
+###########################################################################
+################ 20220201_run_displacement_rework.sh
+
+#! /bin/bash
+
+SCRIPT=/home/jupyter/slide-alignment/slide_alignment/run_displacement_rework.py
+PFMM=/home/jupyter/PathFlow-MixMatch/pathflow_mixmatch/cli_mod.py 
+PATHS=ip_subset_paths.csv
+IDS=ip_subset365_macro_inspection_passing_ids.csv
+
+python $SCRIPT --paths_file $PATHS --slide_id_file $IDS --script $PFMM  --initial_series_idx 4 --higher_res_series_idx 1 --gpu_device -1 --log_out
+###########################################################################
+
+
+
+
+
+
+###########################################################################
+################ 20220202_run_displacement_rework_failed_memory_subset.sh
+
+#! /bin/bash
+
+SCRIPT=/home/jupyter/slide-alignment/slide_alignment/run_displacement_rework.py
+PFMM=/home/jupyter/PathFlow-MixMatch/pathflow_mixmatch/cli_mod.py 
+PATHS=ip_subset_paths.csv
+IDS=ip_subset365_macro_inspection_passing_ids_memory_rerun.csv
+
+python $SCRIPT --paths_file $PATHS --slide_id_file $IDS --script $PFMM  --initial_series_idx 4 --higher_res_series_idx 1 --gpu_device -1 --log_out
+
+###########################################################################
+
+
+
+# then we run immunoprofile_full_ccrcc_mesmer_prep_deid.ipynb to ingest displacement info and format
+
+# then reassign_knr_grade_segmentation_labels.ipynb to map displaced KNR labels to mIF cell calls 
+# this used input of `ccrcc_ip14_arcsinh_quant_agg_with_basic_cutoffs`
+# and produced `ccrcc_ip14_arcsinh_quant_agg_with_basic_cutoffs__rerun_correct_grade_seg`
+
+
+
+
+
+##### CELL CALLING #######
+## run_docker_gpu_split_files_full_14__RERUN.sh           (first)
+##### Used earlier chunking code that produced 1e5 pixel bands fully across the WSI
+
+### then switched to 2500px "proper chunks" of square tiles to deal with the cases that failed
+## run_docker_gpu_split_files_failed3_only_chunk2500.sh   (rerun for 3 cases that failed)
+IP_19_G00562
+IP_19_F00568
+IP_18_A00093
+
+
+#### batching inputs into 2500px regions to allow it to run
+#### single GPU
+#! /bin/bash
+
+docker build -t vanvalenlab/deepcell-applications .
+
+while read CASEID
+do
+    DATA_DIR=/mnt/disks/image_data/immunoprofile/ccrcc_subset_processing/split_tifs
+    MOUNT_DIR=/data
+    APPLICATION=mesmer
+    NUCLEAR_FILE="${CASEID}_0_dapi.tif"
+    MEMBRANE_FILE="${CASEID}_membrane.tif"
+    
+    echo $CASEID
+    echo $DATA_DIR
+    echo $MOUNT_DIR/$NUCLEAR_FILE
+    echo $MOUNT_DIR/$MEMBRANE_FILE
+    
+    echo "mask_${CASEID}.tif"
+    
+    # remove -it flag
+    docker run --gpus 1 \
+      -v $DATA_DIR:$MOUNT_DIR \
+      vanvalenlab/deepcell-applications:latest \
+      $APPLICATION \
+      --nuclear-image $MOUNT_DIR/$NUCLEAR_FILE \
+      --nuclear-channel 0 \
+      --membrane-channel 0 1\
+      --membrane-image $MOUNT_DIR/$MEMBRANE_FILE \
+      --output-directory $MOUNT_DIR \
+      --output-name "rerun_mesmer_mask_${CASEID}.tif" \
+      --compartment whole-cell 
+    
+done < /home/jupyter/mesmer_case_ids_to_run_14_ccrcc.txt
+
+
+# post mesmer run, we do chunked cell phenotyping via `mesmer_run_post_wsi_phenotyping_full_cohort_dask.py` and its derivatives (had to vary nchunks to avoid memory fails I think)
+## takes mesmer output .tifs as input
+## basically just wraps Ark's `create_marker_count_matrix` function to be distributed via Dask
+## used 1000px windows for phenotyping
+
+
+
+### CELL CALLING
+
+# manual cutoffs made in two ways and stored as csvs
+# 1. 20220822_manual_cutoffs_temp_all_cells   [manual_plotly_gating_full_scale_all_cells]
+# 2. 20220823_manual_cutoffs_temp_v3          [20220824_scratch_pd1_foxp3_checking NB]
+
+# generated comparison in `20220823_scratch`
+
+# `rapids_full_global_reclustering_nn15_pc5` generated clusters
+## used feature_cols = qptiff_channels + ['cd8_af_ratio'] + morph_fts
+
+# `20220831_post_clustering_vis`NB: hybrid procedure of manual cutoffs 
+# used     filter_clusters(tmp, upper_thresh=0.7) to do hybrid procedure (meaning a cluster had to be 70% predicted via manual cutoffs, and could not be 20% `omit` class)
+
+# produced `ccrcc_ip14_arcsinh_quant_agg_with_basic_cutoffs__rerun_correct_grade_seg__hybrid_manual_global_louvain__morph_flag`
+
+
+
+#### `pilot_combined_proper_membrane_channels_mesmer` did   `filter_clusters_post_morph_flagging` with (upper_thresh=0.6, omit_thresh=0.35) 
+####### and did dapi + morph filters
+
+ def filter_clusters_post_morph_flagging(df, morph_flag_col='individual_morph_flag', morph_flag_cutoff=0.5,
+                                        dapi_cutoff=7.0, omit_thresh=0.2, lower_thresh=0.3, upper_thresh = 0.6):
+    """
+    Filter through cell type proportions sequentially based on manually selected gates 
+    Intended to catch FP/FN and refine cell type assignments
+    """
+    df['filtered_cell_type'] = np.nan
+    
+    # order matters here since we'll use nan filter to decide what is considered in loop
+    cell_cols = [
+        'cell_label_tumor+',
+        'cell_label_cd8+',
+    ]
+    
+    crit = df['dapi'] < dapi_cutoff
+    df.loc[crit, 'filtered_cell_type'] = 'dapi_omit'
+    
+    crit = (df['filtered_cell_type'].isna()) & (df[morph_flag_col] > morph_flag_cutoff)
+    df.loc[crit, 'filtered_cell_type'] = 'morphology_omit'
+
+    crit = (df['filtered_cell_type'].isna()) & (df['manual_cell_call_Omit'] >= omit_thresh)
+    df.loc[crit, 'filtered_cell_type'] = 'cd8-af-ratio_omit'
+    
+    for col in cell_cols:
+        crit = (df['filtered_cell_type'].isna()) & (df[col] > upper_thresh)
+        df.loc[crit, 'filtered_cell_type'] = f'filtered_{col}'
+    
+        crit = (df['filtered_cell_type'].isna()) & (df[col] > lower_thresh) & (df[col] < upper_thresh)
+        df.loc[crit, 'filtered_cell_type'] = f'unclear_intermediate'
+    
+    df['filtered_cell_type'] = df['filtered_cell_type'].fillna('filtered_meta_other')
+    
+#### FILTERING CLUSTERS
+# produced morphology_omit per cell 
+    # check if a cell has 3 or more morphology feature values that are outside of the 5% ranges of the global distributions for each morph feature
+    # drop a cluster if more than 50% of its members were flagged for previous step
+# forced a minimum DAPI value of arcsinh=7
+# considered a cluster valid if had 60%+ of given cell type by manual cutoffs
+# restricted candidate clusters if they had more than 35% high autofluorescence to CD8 ratio
+    
+# produced ccrcc_ip14_arcsinh_quant_agg_with_basic_cutoffs__rerun_correct_grade_seg__hybrid_manual_global_louvain__morph_flag__cellsubtypes
+
+
+
+# `call_hybrid_residual_cell_subtypes`: uses previously fit residuals (produced in `pilot_combined_proper_membrane_channels_mesmer`) within each main cell subtype
+# overwrote previous detailed_cell_types in favor of a per-cell type residual hybrid strategy 
+
+# derived a consensus residual cutoff based on the median cross each sample 
+
+{'residual_foxp3_in_ungated': 0.07186326597636464,
+ 'residual_pd1_in_cd8+': 0.22349099064698175,
+ 'residual_pdl1_in_tumor+': 0.09974712923464935,
+ 'residual_foxp3_in_cd8+': 0.11371609844527547,
+ 'residual_foxp3_in_tumor+': 0.06602564626936969}
+ 
+ 
+# input ccrcc_ip14_arcsinh_quant_agg_with_basic_cutoffs__rerun_correct_grade_seg__hybrid_manual_global_louvain__morph_flag__cellsubtypes.pkl (produced in `pilot_combined_proper_membrane_channels_mesmer`)
+# pilot_combined_proper_membrane_channels_mesmer also created updated residual cutoffs
+    'residual_pd1_in_cd8+': 0.133567,
+    'residual_pdl1_in_tumor+':0.108897,
+# output ccrcc_ip14_arcsinh_quant_agg__hybrid_detailed_cell_type_calls.pkl
+# this output is used in the final squidpy analysis notebooks
