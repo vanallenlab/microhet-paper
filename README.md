@@ -1,5 +1,7 @@
 # microhet-paper
 
+[![DOI](https://zenodo.org/badge/666810838.svg)](https://zenodo.org/badge/latestdoi/666810838)
+
 ---
 This repository contains supporting code for "Spatially aware deep learning reveals tumor heterogeneity patterns that encode distinct kidney cancer states".
 
