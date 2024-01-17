@@ -34,4 +34,6 @@ packages
         Additional convenience and helper code 
 preprocessing_and_qc_scripts
     Scripts used for HistoQC and tile generation
+pytorch_models
+    Information regarding where to find the pytorch model files
 ```
